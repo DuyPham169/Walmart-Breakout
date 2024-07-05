@@ -8,16 +8,19 @@ public class BallAwake : MonoBehaviour
     [SerializeField] private float moveSpeed;
     [SerializeField] private float barHalfLength;
     [SerializeField] private float vectorScale;
+    private Vector3 originalPos;
 
-    private void Awake()
+    private void Start()
     {
-        rb.velocity = Vector2.down * moveSpeed;
+        originalPos = transform.position;
     }
 
     private void Update()
     {
         increaseBallSpeed();
     }
+
+    public void StartBall() => rb.velocity = Vector2.down * moveSpeed;
 
     private void increaseBallSpeed() => moveSpeed += Time.deltaTime / 10;
 
@@ -35,5 +38,15 @@ public class BallAwake : MonoBehaviour
             float xVector = ((xBall - xBar) / barHalfLength) * vectorScale * moveSpeed;
             rb.velocity = new Vector2(xVector, moveSpeed);
         }
+
+        GetComponent<AudioSource>().Play();
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        GameManager.instance.DeductLives();
+
+        rb.velocity = Vector2.zero;
+        transform.position = originalPos;
     }
 }

@@ -3,7 +3,14 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Ball
+  - Start
+  - Continue
+  - Restart
+  - Score
+  - Lives
+  - Transition
   layers:
   - Default
   - TransparentFX
