@@ -1,2 +1,16 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Specify that .cs files should be counted as C#
+*.cs linguist-language=C#
+
+# Mark shader files to be ignored in language statistics
+*.shader linguist-vendored
+*.hlsl linguist-vendored
+*.cginc linguist-vendored
+
+# Mark other non-C# files to be ignored
+*.meta linguist-vendored
+*.prefab linguist-vendored
+*.unity linguist-vendored
+*.asset linguist-vendored

@@ -8,21 +8,46 @@ public class BallAwake : MonoBehaviour
     [SerializeField] private float moveSpeed;
     [SerializeField] private float barHalfLength;
     [SerializeField] private float vectorScale;
+    [SerializeField] private int speedIncreaseFactor;
+
     private Vector3 originalPos;
+    private float originalMovespeed;
+    private float horizontalTimer;
 
     private void Start()
     {
         originalPos = transform.position;
+        originalMovespeed = moveSpeed;
     }
 
     private void Update()
     {
+        HandleHorizontalStuck();
         increaseBallSpeed();
     }
 
     public void StartBall() => rb.velocity = Vector2.down * moveSpeed;
 
-    private void increaseBallSpeed() => moveSpeed += Time.deltaTime / 10;
+    private void increaseBallSpeed() => moveSpeed += Time.deltaTime / speedIncreaseFactor;
+
+    private void HandleHorizontalStuck()
+    {
+        if (rb.velocity.y == 0)
+        {
+            horizontalTimer += Time.deltaTime;
+
+            if (horizontalTimer > 10.0f)
+            {
+                LevelTransition.instance.livesLeft += 1;
+                horizontalTimer = 0;
+                BallReset();
+            }
+        }
+        else
+        {
+            horizontalTimer = 0;
+        }
+    }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -44,9 +69,15 @@ public class BallAwake : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        BallReset();
+    }
+
+    private void BallReset()
+    {
         GameManager.instance.DeductLives();
 
         rb.velocity = Vector2.zero;
         transform.position = originalPos;
+        moveSpeed = originalMovespeed;
     }
 }

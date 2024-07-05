@@ -7,8 +7,11 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
+
+    [Header("Audio")]
     public AudioSource scoreSFX;
     public AudioSource fallSFX;
+    public AudioSource victorySFX;
 
     [Header("Objects to Get")]
     [SerializeField] private GameObject ball;
@@ -38,9 +41,22 @@ public class GameManager : MonoBehaviour
 
         if (LevelTransition.instance.totalScore >= maxScore)
         {
-            if (progressNextLevel)
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+            StartCoroutine(NextLevelRoutine());
         }
+    }
+
+    private IEnumerator NextLevelRoutine()
+    {
+        victorySFX.Play();
+        Pause();
+
+        yield return new WaitForSecondsRealtime(1.5f);
+
+        Pause();
+        if (progressNextLevel)
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        else
+            SceneManager.LoadScene("VictoryScene");
     }
 
     public void DeductLives()
@@ -67,7 +83,10 @@ public class GameManager : MonoBehaviour
             continueButton.SetActive(false);
     }
 
-    public void Restart() => SceneManager.LoadScene("Level 1");
+    public void Restart() {
+        LevelTransition.instance.DestroyTransition();
+        SceneManager.LoadScene("Level 1");
+    }
 
     private void Pause()
     {
@@ -76,19 +95,13 @@ public class GameManager : MonoBehaviour
     }
 
     private void UpdateScore() {
-        int currScore = 0;
-
-        if (LevelTransition.instance != null)
-            currScore = LevelTransition.instance.totalScore;
+        int currScore = LevelTransition.instance != null ? LevelTransition.instance.totalScore : 0;
 
         scoreText.text = "Score:  " + currScore.ToString();
     }
 
     private void UpdateLives() {
-        int currLives = 3;
-
-        if (LevelTransition.instance != null)
-            currLives = LevelTransition.instance.livesLeft;
+        int currLives = LevelTransition.instance != null ? LevelTransition.instance.livesLeft : 3;
 
         livesText.text = "Lives: " + currLives.ToString();
     }

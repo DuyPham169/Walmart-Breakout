@@ -17,4 +17,10 @@ public class LevelTransition : MonoBehaviour
 
         DontDestroyOnLoad(gameObject);
     }
+
+    public void DestroyTransition()
+    {
+        instance = null;
+        Destroy(gameObject);
+    }
 }
